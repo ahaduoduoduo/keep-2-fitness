@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#090a0a" />
+    <title>C1 Bridge</title>
+    <link rel="stylesheet" href="/app-v6.css" />
+  </head>
+  <body>
+    <main class="dashboard" data-mode="power">
+      <header class="topbar">
+        <span class="product">C1 BRIDGE</span>
+        <span class="connection"><i></i><b id="connection">等待单车</b></span>
+        <button id="openSettings" class="device-mode">设备设置</button>
+      </header>
+
+      <div class="metrics-stage">
+        <button id="primary" class="primary" aria-label="切换主数据">
+          <span id="primaryDisplay" class="primary-display">
+            <span id="primaryValue" class="primary-value">0</span
+            ><span id="primaryUnit" class="primary-unit">W</span>
+          </span>
+        </button>
+
+        <section class="trace-area" aria-label="实时趋势">
+          <canvas id="trace"></canvas>
+          <div id="timeLabels" class="time-labels"></div>
+        </section>
+
+        <aside
+          id="resistanceScale"
+          class="resistance-scale"
+          aria-label="阻力刻度"
+        ></aside>
+
+        <section class="summary">
+          <button class="summary-item cadence" data-metric="cadence">
+            <strong id="cadence">0</strong><span>RPM</span>
+          </button>
+          <i></i>
+          <button id="resistanceButton" class="summary-item resistance">
+            <span>阻力</span><strong id="resistance">1</strong>
+          </button>
+          <i></i>
+          <button class="summary-item duration" data-metric="duration">
+            <strong id="duration">00:00</strong>
+          </button>
+        </section>
+      </div>
+
+      <p id="status" class="status">等待单车广播</p>
+      <section id="controls" class="controls">
+        <button id="startControl" data-training="3" class="primary-control">
+          <span class="control-icon play" aria-hidden="true"></span
+          ><span class="control-label">开始</span>
+        </button>
+        <button
+          id="pauseControl"
+          data-training="4"
+          class="primary-control"
+          hidden
+        >
+          <span class="control-icon pause" aria-hidden="true"></span
+          ><span class="control-label">暂停</span>
+        </button>
+        <button id="stopControl" data-training="1">
+          <span class="control-icon stop" aria-hidden="true"></span
+          ><span class="control-label">停止</span>
+        </button>
+      </section>
+    </main>
+
+    <dialog id="settings">
+      <form method="dialog" class="settings-sheet">
+        <header>
+          <span>设备与网络</span
+          ><button value="cancel" aria-label="关闭">×</button>
+        </header>
+        <section>
+          <h2>添加单车</h2>
+          <button id="openCamera" type="button" class="upload-row">
+            实时扫码
+          </button>
+          <label class="upload-row"
+            >拍照或选择二维码<input
+              id="qrPhoto"
+              type="file"
+              accept="image/*"
+              capture="environment"
+          /></label>
+          <button id="showManualSn" type="button" class="upload-row">
+            手动输入 SN
+          </button>
+          <div id="cameraPanel" class="camera-panel" hidden>
+            <video id="camera" playsinline muted></video
+            ><span>将二维码放入框内</span
+            ><button id="closeCamera" type="button">关闭相机</button>
+          </div>
+          <div id="manualSnPanel" class="optional-panel" hidden>
+            <label
+              >完整 SN<input
+                id="serial"
+                maxlength="16"
+                autocomplete="off"
+                placeholder="CC…"
+            /></label>
+            <button id="bind" type="button" class="accent">绑定设备</button>
+          </div>
+          <button id="readOnly" type="button" class="upload-row">
+            使用第一台只读模式
+          </button>
+          <p id="qrHint" class="hint">
+            二维码只在本机浏览器内识别，不上传照片。
+          </p>
+        </section>
+        <section>
+          <h2>Wi-Fi</h2>
+          <div id="wifiConnectedPanel" class="wifi-connected" hidden>
+            <span class="wifi-state-mark" aria-hidden="true"></span>
+            <div class="wifi-connected-copy">
+              <strong id="wifiConnectedName">已连接</strong>
+              <small id="wifiConnectedMeta"></small>
+            </div>
+            <div class="wifi-connected-actions">
+              <button id="changeWifi" type="button">重新选择</button>
+              <button id="forgetWifi" type="button" class="danger-action">
+                忘记 Wi-Fi
+              </button>
+            </div>
+          </div>
+          <div id="wifiChooser" hidden>
+            <div class="section-heading wifi-chooser-heading">
+              <span>选择附近的 2.4 GHz 网络</span>
+              <button id="scanWifi" type="button" class="compact-action">
+                重新搜索
+              </button>
+            </div>
+            <p id="wifiHint" class="hint">正在搜索附近网络…</p>
+            <div id="wifiNetworks" class="wifi-networks" hidden></div>
+            <button id="showManualWifi" type="button" class="upload-row">
+              手动输入网络
+            </button>
+            <div id="wifiCredentials" class="optional-panel" hidden>
+              <label
+                >网络名称<input id="ssid" maxlength="32" autocomplete="off"
+              /></label>
+              <label
+                >密码<input
+                  id="password"
+                  type="password"
+                  maxlength="64"
+                  autocomplete="new-password"
+              /></label>
+              <button id="saveWifi" type="button" class="accent">
+                保存并连接
+              </button>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h2>局域网 API</h2>
+          <label class="toggle"
+            ><input id="apiAuth" type="checkbox" />启用 API 密钥</label
+          >
+          <label
+            >API 密钥<input
+              id="apiKey"
+              type="password"
+              minlength="8"
+              maxlength="48"
+              autocomplete="off"
+          /></label>
+          <button id="saveApiAuth" type="button">保存 API 设置</button>
+          <p class="hint">
+            默认不验证。启用后使用 <code>Authorization: Bearer 密钥</code> 或
+            <code>X-C1-Bridge-Key</code>。入口：<code>/api/v1</code>。
+          </p>
+        </section>
+      </form>
+    </dialog>
+    <script src="/jsqr-1.4.0.min.js" defer></script>
+    <script src="/app-v6.js" defer></script>
+    <script src="/qr-v2.js" defer></script>
+  </body>
+</html>

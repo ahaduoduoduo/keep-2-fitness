@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bridge_background">#090A0A</color>
+    <color name="bridge_surface">#111312</color>
+    <color name="bridge_text">#F1EEE6</color>
+    <color name="bridge_muted">#8C918D</color>
+    <color name="bridge_accent">#E77846</color>
+</resources>

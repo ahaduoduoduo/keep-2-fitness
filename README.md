@@ -84,3 +84,7 @@ Apple Watch 在“设置 → 蓝牙 → 健康设备”中搜索并连接后，�
     <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="180">
   </a>
 </div>
+
+## 许可证
+
+本项目采用 [MIT License](LICENSE) 开源。保留版权与许可声明后，可以自由使用、修改、分发或用于商业项目。
